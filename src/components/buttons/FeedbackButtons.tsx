@@ -1,6 +1,7 @@
 import { JSX, Show } from 'solid-js';
 import { Spinner } from './SendButton';
-import { ClipboardIcon, ThumbsDownIcon, ThumbsUpIcon } from '../icons';
+import { ThumbsDownIcon, ThumbsUpIcon } from '../icons';
+import { BiSupport } from "react-icons/bi";
 
 type RatingButtonProps = {
   feedbackColor?: string;
@@ -25,7 +26,7 @@ export const CopyToClipboardButton = (props: RatingButtonProps) => {
       title="Copy to clipboard"
     >
       <Show when={!props.isLoading} fallback={<Spinner class="text-white" />}>
-        <ClipboardIcon color={props.feedbackColor ?? defaultFeedbackColor} class={'send-icon flex ' + (props.disableIcon ? 'hidden' : '')} />
+        <BiSupport color={props.feedbackColor ?? defaultFeedbackColor} />
       </Show>
     </button>
   );
