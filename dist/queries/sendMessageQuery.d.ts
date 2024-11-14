@@ -47,6 +47,14 @@ export type LeadCaptureInput = {
 export type LeadCaptureRequest = BaseRequest & {
     body: Partial<LeadCaptureInput>;
 };
+export type SupportInput = {
+    name: string;
+    emailOrPhone: string;
+    message: string;
+};
+export type SupportRequest = BaseRequest & {
+    body: Partial<SupportInput>;
+};
 export declare const sendFeedbackQuery: ({ chatflowid, apiHost, body, onRequest }: CreateFeedbackRequest) => Promise<{
     data?: unknown;
     error?: Error | undefined;
@@ -80,6 +88,10 @@ export declare const sendFileDownloadQuery: ({ apiHost, body, onRequest }: Messa
     error?: Error | undefined;
 }>;
 export declare const addLeadQuery: ({ apiHost, body, onRequest }: LeadCaptureRequest) => Promise<{
+    data?: any;
+    error?: Error | undefined;
+}>;
+export declare const addSupportQuery: ({ apiHost, body, onRequest }: SupportRequest) => Promise<{
     data?: any;
     error?: Error | undefined;
 }>;

@@ -123,7 +123,6 @@ const SupportDialog = (props: SupportDialogProps) => {
           class="flex opacity-25 fixed inset-0 z-[1001] bg-black"
           onClick={handleClose} // Ensures clicking background closes the dialog
         />
-    
       )}
     </>
   );

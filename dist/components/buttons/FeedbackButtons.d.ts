@@ -6,7 +6,7 @@ type RatingButtonProps = {
     disableIcon?: boolean;
     rating?: string;
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
-export declare const CopyToClipboardButton: (props: RatingButtonProps) => JSX.Element;
+export declare const SupportButton: (props: RatingButtonProps) => JSX.Element;
 export declare const ThumbsUpButton: (props: RatingButtonProps) => JSX.Element;
 export declare const ThumbsDownButton: (props: RatingButtonProps) => JSX.Element;
 export {};

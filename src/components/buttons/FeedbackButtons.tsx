@@ -60,7 +60,6 @@ export const SupportButton = (props: RatingButtonProps) => {
       </button>
       <SupportDialog isOpen={isDialogOpen()} onClose={handleDialogClose} onSubmit={handleSupportSubmit} backgroundColor="#f7f8fa" textColor="#333" />
     </>
-
   );
 };
 
