@@ -61,8 +61,10 @@ export type LeadCaptureRequest = BaseRequest & {
 
 export type SupportInput = {
   name: string;
-  emailOrPhone: string;
+  email: string;
   message: string;
+  chatflowid: string;
+  chatId: string;
 };
 
 export type SupportRequest = BaseRequest & {
@@ -146,10 +148,17 @@ export const addLeadQuery = ({ apiHost = 'http://localhost:3000', body, onReques
     onRequest: onRequest,
   });
 
-export const addSupportQuery = ({ apiHost = 'http://localhost:3000', body, onRequest }: SupportRequest) =>
-  sendRequest<any>({
+export const addSupportQuery = ({ apiHost = 'http://localhost:3000', body, onRequest }: SupportRequest) => {
+  console.log('Preparing to send request with body:', body);
+  return sendRequest<any>({
     method: 'POST',
     url: `${apiHost}/api/v1/support/`,
     body,
     onRequest: onRequest,
+  }).then(response => {
+    console.log('Request was sent, response received:', response);
+    return response;
+  }).catch(error => {
+    console.error('Error in request:', error);
   });
+};

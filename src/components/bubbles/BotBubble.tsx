@@ -313,6 +313,7 @@ export const BotBubble = (props: Props) => {
   };
 
   const handleSupportSubmit = async (data: { name: string; email: string; message: string }) => {
+    console.log('Calling addSupportQuery...');
     try {
       const body = {
         name: data.name,

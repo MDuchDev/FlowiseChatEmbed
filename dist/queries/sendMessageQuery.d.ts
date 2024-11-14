@@ -49,8 +49,10 @@ export type LeadCaptureRequest = BaseRequest & {
 };
 export type SupportInput = {
     name: string;
-    emailOrPhone: string;
+    email: string;
     message: string;
+    chatflowid: string;
+    chatId: string;
 };
 export type SupportRequest = BaseRequest & {
     body: Partial<SupportInput>;
@@ -91,7 +93,7 @@ export declare const addLeadQuery: ({ apiHost, body, onRequest }: LeadCaptureReq
     data?: any;
     error?: Error | undefined;
 }>;
-export declare const addSupportQuery: ({ apiHost, body, onRequest }: SupportRequest) => Promise<{
+export declare const addSupportQuery: ({ apiHost, body, onRequest }: SupportRequest) => Promise<void | {
     data?: any;
     error?: Error | undefined;
 }>;
