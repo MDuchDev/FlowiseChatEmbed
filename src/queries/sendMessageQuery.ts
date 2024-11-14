@@ -59,6 +59,16 @@ export type LeadCaptureRequest = BaseRequest & {
   body: Partial<LeadCaptureInput>;
 };
 
+export type SupportInput = {
+  name: string;
+  emailOrPhone: string;
+  message: string;
+};
+
+export type SupportRequest = BaseRequest & {
+  body: Partial<SupportInput>;
+};
+
 export const sendFeedbackQuery = ({ chatflowid, apiHost = 'http://localhost:3000', body, onRequest }: CreateFeedbackRequest) =>
   sendRequest({
     method: 'POST',
@@ -132,6 +142,14 @@ export const addLeadQuery = ({ apiHost = 'http://localhost:3000', body, onReques
   sendRequest<any>({
     method: 'POST',
     url: `${apiHost}/api/v1/leads/`,
+    body,
+    onRequest: onRequest,
+  });
+
+export const addSupportQuery = ({ apiHost = 'http://localhost:3000', body, onRequest }: SupportRequest) =>
+  sendRequest<any>({
+    method: 'POST',
+    url: `${apiHost}/api/v1/support/`,
     body,
     onRequest: onRequest,
   });

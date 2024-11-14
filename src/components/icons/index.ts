@@ -1,4 +1,4 @@
-export * from './ClipboardIcon';
+export * from './SupportIcon';
 export * from './ThumbsDownIcon';
 export * from './ThumbsUpIcon';
 export * from './AddImageIcon';

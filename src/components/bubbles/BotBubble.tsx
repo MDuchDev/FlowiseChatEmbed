@@ -1,14 +1,15 @@
 import { createEffect, Show, createSignal, onMount, For } from 'solid-js';
 import { Avatar } from '../avatars/Avatar';
 import { Marked } from '@ts-stack/markdown';
-import { FeedbackRatingType, sendFeedbackQuery, sendFileDownloadQuery, updateFeedbackQuery } from '@/queries/sendMessageQuery';
+import { addSupportQuery, FeedbackRatingType, sendFeedbackQuery, sendFileDownloadQuery, updateFeedbackQuery } from '@/queries/sendMessageQuery';
 import { FileUpload, IAction, MessageType } from '../Bot';
-import { CopyToClipboardButton, ThumbsDownButton, ThumbsUpButton } from '../buttons/FeedbackButtons';
+import { SupportButton, ThumbsDownButton, ThumbsUpButton } from '../buttons/FeedbackButtons';
 import FeedbackContentDialog from '../FeedbackContentDialog';
 import { AgentReasoningBubble } from './AgentReasoningBubble';
 import { TickIcon, XIcon } from '../icons';
 import { SourceBubble } from '../bubbles/SourceBubble';
 import { DateTimeToggleTheme } from '@/features/bubble/types';
+import SupportDialog from '../SupportDialog';
 
 type Props = {
   message: MessageType;
@@ -47,9 +48,9 @@ export const BotBubble = (props: Props) => {
   const [rating, setRating] = createSignal('');
   const [feedbackId, setFeedbackId] = createSignal('');
   const [showFeedbackContentDialog, setShowFeedbackContentModal] = createSignal(false);
-  const [copiedMessage, setCopiedMessage] = createSignal(false);
-  const [thumbsUpColor, setThumbsUpColor] = createSignal(props.feedbackColor ?? defaultFeedbackColor); // default color
-  const [thumbsDownColor, setThumbsDownColor] = createSignal(props.feedbackColor ?? defaultFeedbackColor); // default color
+  const [showSupportDialog, setShowSupportDialog] = createSignal(false); // New signal for the support dialog
+  const [thumbsUpColor, setThumbsUpColor] = createSignal(props.feedbackColor ?? defaultFeedbackColor);
+  const [thumbsDownColor, setThumbsDownColor] = createSignal(props.feedbackColor ?? defaultFeedbackColor);
 
   const downloadFile = async (fileAnnotation: any) => {
     try {
@@ -68,19 +69,6 @@ export const BotBubble = (props: Props) => {
       link.remove();
     } catch (error) {
       console.error('Download failed:', error);
-    }
-  };
-
-  const copyMessageToClipboard = async () => {
-    try {
-      const text = botMessageEl ? botMessageEl?.textContent : '';
-      await navigator.clipboard.writeText(text || '');
-      setCopiedMessage(true);
-      setTimeout(() => {
-        setCopiedMessage(false);
-      }, 2000); // Hide the message after 2 seconds
-    } catch (error) {
-      console.error('Error copying to clipboard:', error);
     }
   };
 
@@ -145,7 +133,6 @@ export const BotBubble = (props: Props) => {
         setRating('THUMBS_UP');
         setFeedbackId(id);
         setShowFeedbackContentModal(true);
-        // update the thumbs up color state
         setThumbsUpColor('#006400');
         saveToLocalStorage('THUMBS_UP');
       }
@@ -175,7 +162,6 @@ export const BotBubble = (props: Props) => {
         setRating('THUMBS_DOWN');
         setFeedbackId(id);
         setShowFeedbackContentModal(true);
-        // update the thumbs down color state
         setThumbsDownColor('#8B0000');
         saveToLocalStorage('THUMBS_DOWN');
       }
@@ -290,7 +276,6 @@ export const BotBubble = (props: Props) => {
     try {
       const date = new Date(dateTimeString);
 
-      // Check if the date is valid
       if (isNaN(date.getTime())) {
         console.error('Invalid ISO date string:', dateTimeString);
         return '';
@@ -324,6 +309,32 @@ export const BotBubble = (props: Props) => {
     } catch (error) {
       console.error('Error formatting date:', error);
       return '';
+    }
+  };
+
+  const handleSupportSubmit = async (data: { name: string; email: string; message: string }) => {
+    try {
+      const body = {
+        name: data.name,
+        email: data.email,
+        message: data.message,
+        chatflowid: props.chatflowid,
+        chatId: props.chatId,
+      };
+
+      // Send request to save support query
+      const result = await addSupportQuery({
+        apiHost: props.apiHost,
+        body,
+        onRequest: props.onRequest,
+      });
+
+      if (result) {
+        console.log('Support query saved successfully.');
+        setShowSupportDialog(false);
+      }
+    } catch (error) {
+      console.error('Error saving support query:', error);
     }
   };
 
@@ -455,23 +466,22 @@ export const BotBubble = (props: Props) => {
         {props.chatFeedbackStatus && props.message.messageId && (
           <>
             <div class={`flex items-center px-2 pb-2 ${props.showAvatar ? 'ml-10' : ''}`}>
-              <CopyToClipboardButton feedbackColor={props.feedbackColor} onClick={() => copyMessageToClipboard()} />
-              <Show when={copiedMessage()}>
-                <div class="copied-message" style={{ color: props.feedbackColor ?? defaultFeedbackColor }}>
-                  Copied!
-                </div>
-              </Show>
-              {rating() === '' || rating() === 'THUMBS_UP' ? (
-                <ThumbsUpButton feedbackColor={thumbsUpColor()} isDisabled={rating() === 'THUMBS_UP'} rating={rating()} onClick={onThumbsUpClick} />
-              ) : null}
-              {rating() === '' || rating() === 'THUMBS_DOWN' ? (
-                <ThumbsDownButton
-                  feedbackColor={thumbsDownColor()}
-                  isDisabled={rating() === 'THUMBS_DOWN'}
-                  rating={rating()}
-                  onClick={onThumbsDownClick}
-                />
-              ) : null}
+              <SupportButton feedbackColor={props.feedbackColor} onClick={() => setShowSupportDialog(true)} />
+              <ThumbsUpButton feedbackColor={thumbsUpColor()} isDisabled={rating() === 'THUMBS_UP'} rating={rating()} onClick={onThumbsUpClick} />
+              <ThumbsDownButton
+                feedbackColor={thumbsDownColor()}
+                isDisabled={rating() === 'THUMBS_DOWN'}
+                rating={rating()}
+                onClick={onThumbsDownClick}
+              />
+              <SupportButton feedbackColor={props.feedbackColor} onClick={() => setShowSupportDialog(true)} />
+              <ThumbsUpButton feedbackColor={thumbsUpColor()} isDisabled={rating() === 'THUMBS_UP'} rating={rating()} onClick={onThumbsUpClick} />
+              <ThumbsDownButton
+                feedbackColor={thumbsDownColor()}
+                isDisabled={rating() === 'THUMBS_DOWN'}
+                rating={rating()}
+                onClick={onThumbsDownClick}
+              />
               <Show when={props.message.dateTime}>
                 <div class="text-sm text-gray-500 ml-2">
                   {formatDateTime(props.message.dateTime, props?.dateTimeToggle?.date, props?.dateTimeToggle?.time)}
@@ -483,6 +493,15 @@ export const BotBubble = (props: Props) => {
                 isOpen={showFeedbackContentDialog()}
                 onClose={() => setShowFeedbackContentModal(false)}
                 onSubmit={submitFeedbackContent}
+                backgroundColor={props.backgroundColor}
+                textColor={props.textColor}
+              />
+            </Show>
+            <Show when={showSupportDialog()}>
+              <SupportDialog
+                isOpen={showSupportDialog()}
+                onClose={() => setShowSupportDialog(false)}
+                onSubmit={handleSupportSubmit}
                 backgroundColor={props.backgroundColor}
                 textColor={props.textColor}
               />
