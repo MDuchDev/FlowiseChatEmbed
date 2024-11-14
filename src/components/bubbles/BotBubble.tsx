@@ -474,14 +474,6 @@ export const BotBubble = (props: Props) => {
                 rating={rating()}
                 onClick={onThumbsDownClick}
               />
-              <SupportButton feedbackColor={props.feedbackColor} onClick={() => setShowSupportDialog(true)} />
-              <ThumbsUpButton feedbackColor={thumbsUpColor()} isDisabled={rating() === 'THUMBS_UP'} rating={rating()} onClick={onThumbsUpClick} />
-              <ThumbsDownButton
-                feedbackColor={thumbsDownColor()}
-                isDisabled={rating() === 'THUMBS_DOWN'}
-                rating={rating()}
-                onClick={onThumbsDownClick}
-              />
               <Show when={props.message.dateTime}>
                 <div class="text-sm text-gray-500 ml-2">
                   {formatDateTime(props.message.dateTime, props?.dateTimeToggle?.date, props?.dateTimeToggle?.time)}
